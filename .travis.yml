@@ -2,6 +2,7 @@ notifications:
   email:
     recipients:
       - rich@flatcap.org
+      - gahr@gahr.ch
     on_success: change
     on_failure: always
 
@@ -49,6 +50,12 @@ before_script:
 
 script:
   - ~/config/build
+  - make distclean
+  - ./configure.autosetup --everything && make
+  - make distclean
+  - ./configure.autosetup --gnutls --disable-doc --disable-nls && make
+  - make distclean
+  - ./configure.autosetup --with-ui=slang --disable-doc --disable-nls && make
 
 after_script:
   - ccache --show-stats
