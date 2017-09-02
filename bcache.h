@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 
-struct Account;
+struct Account0;
 struct BodyCache;
 
 /**
@@ -39,7 +39,7 @@ struct BodyCache;
  * separated by '/' (if it knows of such a concepts like mailboxes or
  * hierarchies)
  */
-struct BodyCache *mutt_bcache_open(struct Account *account, const char *mailbox);
+struct BodyCache *mutt_bcache_open(struct Account0 *account, const char *mailbox);
 
 /**
  * mutt_bcache_close - Close an Email-Body Cache
