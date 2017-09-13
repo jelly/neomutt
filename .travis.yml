@@ -1,10 +1,5 @@
 notifications:
-  email:
-    recipients:
-      - rich@flatcap.org
-      - gahr@gahr.ch
-    on_success: change
-    on_failure: always
+  email: false
 
 sudo: false
 dist: trusty
@@ -43,19 +38,13 @@ git:
   depth: 3
 
 install:
-  - git clone --depth 1 https://github.com/neomutt/travis-build.git ~/config
+  - git clone --branch autosetup --depth 1 https://github.com/neomutt/travis-build.git ~/config
 
 before_script:
   - ccache --zero-stats
 
 script:
   - ~/config/build
-  - make distclean
-  - ./configure.autosetup --everything && make
-  - make distclean
-  - ./configure.autosetup --gnutls --disable-doc --disable-nls && make
-  - make distclean
-  - ./configure.autosetup --with-ui=slang --disable-doc --disable-nls && make
 
 after_script:
   - ccache --show-stats
