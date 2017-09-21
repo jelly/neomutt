@@ -206,7 +206,7 @@ if {1} {
 
   # GCC-specifc CFLAGS
   if {![catch {exec [get-define CC] --version} res]} {
-    if {[string match gcc* $res]} {
+    if {[regexp -nocase gcc $res]} {
       define-append CFLAGS "-fno-delete-null-pointer-checks"
     }
   }
