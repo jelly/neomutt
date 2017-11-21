@@ -28,6 +28,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
@@ -1017,9 +1018,8 @@ void mbox_reset_atime(struct Context *ctx, struct stat *st)
  */
 static int mbox_sync_mailbox(struct Context *ctx, int *index_hint)
 {
-  char tempfile[_POSIX_PATH_MAX];
   char buf[32];
-  int i, j, save_sort = SORT_ORDER;
+  int i, j, fd, save_sort = SORT_ORDER;
   int rc = -1;
   int need_sort = 0; /* flag to resort mailbox if new mail arrives */
   int first = -1;    /* first message to be written */
@@ -1074,15 +1074,17 @@ static int mbox_sync_mailbox(struct Context *ctx, int *index_hint)
     return -1;
 
   /* Create a temporary file to write the new version of the mailbox in. */
-  mutt_mktemp(tempfile, sizeof(tempfile));
-  if ((i = open(tempfile, O_WRONLY | O_EXCL | O_CREAT, 0600)) == -1 ||
-      (fp = fdopen(i, "w")) == NULL)
+  char tempfile[_POSIX_PATH_MAX];
+  i = snprintf(tempfile, sizeof(tempfile), "%s/neomutt-XXXXXXX", NONULL(Tmpdir));
+  if (i == 0)
   {
-    if (-1 != i)
-    {
-      close(i);
-      unlink(tempfile);
-    }
+    mutt_error(_("Could not create temporary filename!"));
+    mutt_sleep(5);
+    goto bail;
+  }
+
+  if ((fd = mkstemp(tempfile)) == -1 || ((fp = fdopen(fd, "w")) == NULL))
+  {
     mutt_error(_("Could not create temporary file!"));
     mutt_sleep(5);
     goto bail;
